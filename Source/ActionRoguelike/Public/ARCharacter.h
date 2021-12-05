@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "ARInteractionComponent.h"
 #include "GameFramework/Character.h"
 #include "ARCharacter.generated.h"
 
@@ -16,8 +17,13 @@ class ACTIONROGUELIKE_API AARCharacter : public ACharacter
 
 protected:
 
-	UPROPERTY(EditAnywhere)
+	UPROPERTY(EditAnywhere, Category="Attack")
 	TSubclassOf<AActor> ProjectileClass;
+
+	UPROPERTY(EditAnywhere, Category="Attack")
+	UAnimMontage* AttackAnim;
+
+	FTimerHandle TimerHandle_PrimaryAttack;
 	
 public:
 	// Sets default values for this character's properties
@@ -31,6 +37,9 @@ protected:
 	UPROPERTY(VisibleAnywhere)
 	UCameraComponent* CameraComp;
 
+	UPROPERTY(VisibleAnywhere)
+	UARInteractionComponent* InteractionComp;
+
 	// Called when the game starts or when spawned
 	virtual void BeginPlay() override;
 
@@ -39,6 +48,10 @@ protected:
 	void MoveRight(float Value);
 
 	void PrimaryAttack();
+
+	void PrimaryInteract();
+
+	void PrimaryAttack_TimeElapsed();
 public:	
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;

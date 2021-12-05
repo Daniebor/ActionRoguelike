@@ -21,6 +21,8 @@ AARCharacter::AARCharacter()
 	CameraComp = CreateDefaultSubobject<UCameraComponent>("CameraComp");
 	CameraComp->SetupAttachment(SpringArmComp);
 
+	InteractionComp = CreateDefaultSubobject<UARInteractionComponent>("Interaction Component");
+
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	
 	bUseControllerRotationYaw = false;
@@ -52,6 +54,7 @@ void AARCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	PlayerInputComponent->BindAxis("LookUp", this, &APawn::AddControllerPitchInput);
 
 	PlayerInputComponent->BindAction("PrimaryAttack", IE_Pressed, this, &AARCharacter::PrimaryAttack);
+	PlayerInputComponent->BindAction("PrimaryInteract", IE_Pressed, this, &AARCharacter::PrimaryInteract);
 
 	PlayerInputComponent->BindAction("Jump", IE_Pressed, this, &AARCharacter::Jump);
 }
@@ -82,6 +85,13 @@ void AARCharacter::MoveRight(const float Value)
 
 void AARCharacter::PrimaryAttack()
 {
+	PlayAnimMontage(AttackAnim);
+	
+	GetWorldTimerManager().SetTimer(TimerHandle_PrimaryAttack, this, &AARCharacter::PrimaryAttack_TimeElapsed, 0.2f);
+}
+
+void AARCharacter::PrimaryAttack_TimeElapsed()
+{
 	const FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	
 	const FTransform SpawnTM = FTransform(GetControlRotation(), SpawnLocation);
@@ -91,3 +101,12 @@ void AARCharacter::PrimaryAttack()
 	
 	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
 }
+
+void AARCharacter::PrimaryInteract()
+{
+	if (InteractionComp)
+	{
+		InteractionComp->PrimaryInteract();
+	}
+}
+
