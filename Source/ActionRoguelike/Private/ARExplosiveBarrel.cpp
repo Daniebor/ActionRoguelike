@@ -3,6 +3,8 @@
 
 #include "ARExplosiveBarrel.h"
 
+#include "DrawDebugHelpers.h"
+
 // Sets default values
 AARExplosiveBarrel::AARExplosiveBarrel()
 {
@@ -16,8 +18,11 @@ AARExplosiveBarrel::AARExplosiveBarrel()
 	RootComponent = MeshComp;
 
 	RadialForceComp = CreateDefaultSubobject<URadialForceComponent>("Radial Force");
+	RadialForceComp->SetAutoActivate(false);
 	RadialForceComp->Radius = 650.0f;
 	RadialForceComp->ImpulseStrength = 2000.0f;
+
+	// Ignores the current velocity and mass of the object --> Less accurate but doesn't need absurd values on the impulse strength
 	RadialForceComp->bImpulseVelChange = true;
 
 }
@@ -41,6 +46,13 @@ void AARExplosiveBarrel::OnCompHit(UPrimitiveComponent* HitComp, AActor* OtherAc
 	if ((OtherActor != nullptr) && (OtherActor != this) && (OtherComp != nullptr))
 	{
 		RadialForceComp->FireImpulse();
+
+		UE_LOG(LogTemp, Log, TEXT("OnCompHit in Explosive Barrel"));
+
+		UE_LOG(LogTemp, Warning, TEXT("OtherActor: %s, at game time: %f"), *GetNameSafe(OtherActor), GetWorld()->TimeSeconds);
+
+		FString const CombinedString = FString::Printf(TEXT("Hit at location: %s"), *Hit.ImpactPoint.ToString());
+		DrawDebugString(GetWorld(), Hit.ImpactPoint, CombinedString, nullptr, FColor::Green, 2.0f, true);
 	}
 }
 

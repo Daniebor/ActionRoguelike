@@ -92,15 +92,18 @@ void AARCharacter::PrimaryAttack()
 
 void AARCharacter::PrimaryAttack_TimeElapsed()
 {
-	const FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
+	if (ensure(ProjectileClass))
+	{
+		const FVector SpawnLocation = GetMesh()->GetSocketLocation("Muzzle_01");
 	
-	const FTransform SpawnTM = FTransform(GetControlRotation(), SpawnLocation);
+		const FTransform SpawnTM = FTransform(GetControlRotation(), SpawnLocation);
 
-	FActorSpawnParameters SpawnParams;
-	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
-	SpawnParams.Instigator = this;
+		FActorSpawnParameters SpawnParams;
+		SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+		SpawnParams.Instigator = this;
 	
-	GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+		GetWorld()->SpawnActor<AActor>(ProjectileClass, SpawnTM, SpawnParams);
+	}
 }
 
 void AARCharacter::PrimaryInteract()
